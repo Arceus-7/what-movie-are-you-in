@@ -59,7 +59,7 @@ To run this application locally, you must utilize the Netlify CLI to simulate th
 
 ## Disclaimer
 
-This project was built primarily for fun and exploration. It was created with the assistance of "vibecoding"—using AI to generate and refine parts of the codebase, as I am not entirely proficient in JSX, React, or Vite build configurations. As such, the code may contain unconventional patterns or structure, but since it gets the job done I did not bother refining it further, any comments or suggestions are welcome where I can improve it.
+This project was built primarily for fun and exploration. It was created with the assistance of "vibecoding", i.e. using AI to refine parts of the codebase, as I am not entirely proficient in JSX, React, or Vite build configurations. As such, the code may contain unconventional patterns or structure, but since it gets the job done I did not bother refining it further, any comments or suggestions are welcome where I can improve it.
 
 ## License
 

@@ -57,6 +57,10 @@ To run this application locally, you must utilize the Netlify CLI to simulate th
 5.  View the generated Scene Card.
 6.  (Optional) Click "Save Stills" to export a PNG composite of the image and the generated metadata.
 
+## Disclaimer
+
+This project was built primarily for fun and exploration. It was created with the assistance of "vibecoding"—using AI to generate and refine parts of the codebase, as I am not entirely proficient in JSX, React, or Vite build configurations. As such, the code may contain unconventional patterns or structure, but since it gets the job done I did not bother refining it further, any comments or suggestions are welcome where I can improve it.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

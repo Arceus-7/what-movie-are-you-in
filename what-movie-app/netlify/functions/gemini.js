@@ -16,9 +16,7 @@ You must return your response as a valid, structured JSON object with the follow
 - "whatJustHappened": (String) A 1-2 sentence description of the intense or mundane dramatic action that occurred right before this frame.
 - "whatIsAboutToHappen": (String) A 1-2 sentence description of the impending action or emotional beat that will follow this frame.
 - "cinematographyNote": (String) A technical yet artsy description of how this shot was achieved (e.g., "Shot on 35mm Kodak Vision3 with an anamorphic lens, relying purely on the ambient street neon to silhouette the subject's quiet desperation.")
-- "songPlaying": (String) An invented, highly specific licensed track name and artist that is playing diegetically or non-diegetically over this scene (e.g., "Neon Rain" by The Midnight, or "Concerto no. 4" by Vivaldi).
-
-Crucial Instruction: DO NOT wrap the JSON in markdown code blocks (\`\`\`json). Return ONLY the raw JSON object string.`;
+- "songPlaying": (String) An invented, highly specific licensed track name and artist that is playing diegetically or non-diegetically over this scene (e.g., "Neon Rain" by The Midnight, or "Concerto no. 4" by Vivaldi).`;
 
 exports.handler = async (event) => {
   // Only allow POST requests
@@ -78,7 +76,10 @@ exports.handler = async (event) => {
     for (const modelName of modelsToTry) {
       try {
         console.log("Severless Proxy: Trying model: " + modelName);
-        const model = genAI.getGenerativeModel({ model: modelName });
+        const model = genAI.getGenerativeModel({ 
+          model: modelName,
+          generationConfig: { responseMimeType: "application/json" }
+        });
         result = await model.generateContent(prompt);
         break; // break early if successful
       } catch (error) {
@@ -98,13 +99,10 @@ exports.handler = async (event) => {
     const responseText = result.response.text();
     console.log("Serverless Proxy: Gemini Raw Response received.");
     
-    // Parse the JSON safely extracting just the object
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error("Gemini did not return a valid JSON object. Raw: " + responseText.substring(0, 100));
-    }
+    // In strict JSON mode, the response *is* valid JSON, but occasionally it might still have markdown wrapping if a fallback model ignored the config.
+    const cleanText = responseText.replace(/^```json\n?/, '').replace(/\n?```$/, '');
     
-    const parsedData = JSON.parse(jsonMatch[0]);
+    const parsedData = JSON.parse(cleanText);
 
     return {
       statusCode: 200,

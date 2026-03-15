@@ -48,14 +48,19 @@ export default function CameraView({ onCapture, onCancel }) {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     
-    // Resize high-res mobile cameras to prevent Netlify 6MB payload limit errors
-    const MAX_WIDTH = 1280;
+    // Resize high-res mobile cameras (especially portrait mode) to ensure tiny payloads
+    const MAX_DIM = 800;
     let pWidth = video.videoWidth;
     let pHeight = video.videoHeight;
     
-    if (pWidth > MAX_WIDTH) {
-      pHeight = Math.floor((pHeight * MAX_WIDTH) / pWidth);
-      pWidth = MAX_WIDTH;
+    if (Math.max(pWidth, pHeight) > MAX_DIM) {
+      if (pWidth > pHeight) {
+        pHeight = Math.floor((pHeight * MAX_DIM) / pWidth);
+        pWidth = MAX_DIM;
+      } else {
+        pWidth = Math.floor((pWidth * MAX_DIM) / pHeight);
+        pHeight = MAX_DIM;
+      }
     }
     
     // Set canvas dimensions
@@ -70,7 +75,7 @@ export default function CameraView({ onCapture, onCancel }) {
     // Convert to target cinematic view (desaturate & grain)
     processImage(ctx, pWidth, pHeight);
     
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
     onCapture(dataUrl);
   };
 
@@ -99,13 +104,19 @@ export default function CameraView({ onCapture, onCancel }) {
         const canvas = canvasRef.current;
         if(!canvas) return;
         
-        // Resize large images
-        const MAX_WIDTH = 1280;
+        // Resize large images based on longest dimension
+        const MAX_DIM = 800;
         let pWidth = img.width;
         let pHeight = img.height;
-        if (pWidth > MAX_WIDTH) {
-          pHeight = Math.floor((pHeight * MAX_WIDTH) / pWidth);
-          pWidth = MAX_WIDTH;
+        
+        if (Math.max(pWidth, pHeight) > MAX_DIM) {
+          if (pWidth > pHeight) {
+            pHeight = Math.floor((pHeight * MAX_DIM) / pWidth);
+            pWidth = MAX_DIM;
+          } else {
+            pWidth = Math.floor((pWidth * MAX_DIM) / pHeight);
+            pHeight = MAX_DIM;
+          }
         }
 
         canvas.width = pWidth;
@@ -114,7 +125,7 @@ export default function CameraView({ onCapture, onCancel }) {
         ctx.drawImage(img, 0, 0, pWidth, pHeight);
         processImage(ctx, pWidth, pHeight);
         
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
         onCapture(dataUrl);
       };
       img.src = event.target.result;

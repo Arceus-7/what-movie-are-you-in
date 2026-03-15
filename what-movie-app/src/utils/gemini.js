@@ -17,7 +17,8 @@ export async function analyzeImage(base64Image) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Server responded with status ${response.status}`);
+      const detailedError = errorData.details ? `${errorData.error} - ${errorData.details}` : errorData.error;
+      throw new Error(detailedError || `Server responded with status ${response.status}`);
     }
 
     const data = await response.json();

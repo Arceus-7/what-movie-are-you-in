@@ -48,17 +48,27 @@ export default function CameraView({ onCapture, onCancel }) {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     
-    // Set canvas dimensions to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    // Resize high-res mobile cameras to prevent Netlify 6MB payload limit errors
+    const MAX_WIDTH = 1280;
+    let pWidth = video.videoWidth;
+    let pHeight = video.videoHeight;
+    
+    if (pWidth > MAX_WIDTH) {
+      pHeight = Math.floor((pHeight * MAX_WIDTH) / pWidth);
+      pWidth = MAX_WIDTH;
+    }
+    
+    // Set canvas dimensions
+    canvas.width = pWidth;
+    canvas.height = pHeight;
     
     const ctx = canvas.getContext('2d');
     
     // Draw the current video frame
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, 0, 0, pWidth, pHeight);
     
     // Convert to target cinematic view (desaturate & grain)
-    processImage(ctx, canvas.width, canvas.height);
+    processImage(ctx, pWidth, pHeight);
     
     const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
     onCapture(dataUrl);
